@@ -1,4 +1,9 @@
+# Large files
 images
 training
 training_vehicle
 TFLite_model
+
+# Catche files
+.ipynb_checkpoints
+__pycache__

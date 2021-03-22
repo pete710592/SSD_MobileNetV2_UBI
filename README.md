@@ -38,12 +38,12 @@ item {
 ### 3-2. Config ```training/ssd_mobilenet_v2_quantized_300x300_coco.config```  
  - Line 9. Change num_classes to the number of different objects you want the classifier to detect. Ex: ```num_classes: 1```  
  - Line 141. Change batch_size. The smaller batch size will prevent OOM (Out of Memory) errors during training. Ex: ```batch_size: 6```  
- - Line 156. Change fine_tune_checkpoint to: ```/root/notebooks/models/research/object_detection/ssd_mobilenet_v2_quantized_300x300_coco_2019_01_03/model.ckpt```  
- - Line 175. Change input_path to: ```/root/notebooks/models/research/object_detection/training/train.record```  
- - Line 177. Change label_map_path to: ```/root/notebooks/models/research/object_detection/training/labelmap.pbtxt```  
+ - Line 156. Change fine_tune_checkpoint to: ```/root/notebooks/SSD_MobileNetV2_UBI/research/object_detection/pretrained_model/ssd_mobilenet_v2_quantized_300x300_coco_2019_01_03/model.ckpt```  
+ - Line 175. Change input_path to: ```/root/notebooks/SSD_MobileNetV2_UBI/research/object_detection/training/train.record```  
+ - Line 177. Change label_map_path to: ```/root/notebooks/SSD_MobileNetV2_UBI/research/object_detection/training/labelmap.pbtxt```  
  - Line 181. Change num_examples to the number of images you have in the images/test directory. Ex: ```num_examples: 9951```  
- - Line 189. Change input_path to: ```/root/notebooks/models/research/object_detection/training/test.record```  
- - Line 191. Change label_map_path to: ```/root/notebooks/models/research/object_detection/training/labelmap.pbtxt```  
+ - Line 189. Change input_path to: ```/root/notebooks/SSD_MobileNetV2_UBI/research/object_detection/training/test.record```  
+ - Line 191. Change label_map_path to: ```/root/notebooks/SSD_MobileNetV2_UBI/research/object_detection/training/labelmap.pbtxt```  
 
 ### 3-3. Generate ```images/train_labels.csv``` & ```images/test_labels.csv```  
 ```shell
