@@ -69,7 +69,7 @@ python generate_tfrecord.py --csv_input=images/test_labels.csv --image_dir=image
 
 ### 3-5. Start training  
 ```shell
-python train.py --logtostderr –train_dir=training/ --pipeline_config_path=training/pretrained_model/ssd_mobilenet_v2_quantized_300x300_coco.config
+python train.py --logtostderr --train_dir=training/ --pipeline_config_path=training/ssd_mobilenet_v2_quantized_300x300_coco.config
 ```  
 
 ## Part 4: Export frozen inference graph for TensorFlow Lite  
