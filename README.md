@@ -9,12 +9,12 @@ pip install tensorflow-gpu==1.15
 ## 1-2. Download this repository from GitHub  
 ```shell
 cd
-git clone https://github.com/pete710592/SSD_MobileNetV2_UBI.git models
+git clone https://github.com/pete710592/SSD_MobileNetV2_UBI.git
 ```  
 
 ## 1-3. Run setup  
 ```shell
-cd ~/models/research/slim
+cd ~/SSD_MobileNetV2_UBI/research/slim
 python setup.py build
 python setup.py install
 ```  
@@ -24,7 +24,7 @@ python setup.py install
 ## Part 3: Ready for training  
 First, moving your path to:  
 ```shell
-cd ~/models/research/object_detection
+cd ~/SSD_MobileNetV2_UBI/research/object_detection
 ```  
 
 ### 3-1. Config ```training/labelmap.pbtxt```  
@@ -75,7 +75,7 @@ python train.py --logtostderr –train_dir=training/ --pipeline_config_path=trai
 ## Part 4: Export frozen inference graph for TensorFlow Lite  
 The model can be exported for conversion to TensorFlow Lite using the export_tflite_ssd_graph.py script. First, create a folder in ```./object_detection``` called ```TFLite_model``` by issuing:  
 ```shell
-cd ~/models/research/object_detection
+cd ~/SSD_MobileNetV2_UBI/research/object_detection
 mkdir TFLite_model
 ```  
 
