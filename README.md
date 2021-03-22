@@ -69,7 +69,7 @@ python generate_tfrecord.py --csv_input=images/test_labels.csv --image_dir=image
 
 ### 3-5. Start training  
 ```shell
-python train.py --logtostderr –train_dir=training/ --pipeline_config_path=training/ssd_mobilenet_v2_quantized_300x300_coco.config
+python train.py --logtostderr –train_dir=training/ --pipeline_config_path=training/pretrained_model/ssd_mobilenet_v2_quantized_300x300_coco.config
 ```  
 
 ## Part 4: Export frozen inference graph for TensorFlow Lite  
@@ -82,7 +82,7 @@ mkdir TFLite_model
 Export the model for TensorFlow Lite:  
 ```shell
 python export_tflite_ssd_graph.py \
-    --pipeline_config_path='training/ssd_mobilenet_v2_quantized_300x300_coco.config' \
+    --pipeline_config_path='training/pretrained_model/ssd_mobilenet_v2_quantized_300x300_coco.config' \
     --trained_checkpoint_prefix='training/model.ckpt-xxxx' \
     --output_directory='TFLite_model' \
     --add_postprocessing_op=true
