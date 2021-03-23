@@ -82,7 +82,7 @@ mkdir TFLite_model
 Export the model for TensorFlow Lite:  
 ```shell
 python export_tflite_ssd_graph.py \
-    --pipeline_config_path='training/pretrained_model/ssd_mobilenet_v2_quantized_300x300_coco.config' \
+    --pipeline_config_path='training/ssd_mobilenet_v2_quantized_300x300_coco.config' \
     --trained_checkpoint_prefix='training/model.ckpt-xxxx' \
     --output_directory='TFLite_model' \
     --add_postprocessing_op=true
