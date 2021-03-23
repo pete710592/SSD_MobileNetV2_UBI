@@ -79,7 +79,7 @@ cd ~/SSD_MobileNetV2_UBI/research/object_detection
 mkdir TFLite_model
 ```  
 
-Export the model for TensorFlow Lite:  
+### 4-1. Export the model for TensorFlow Lite:  
 Generate ```tflite_graph.pb``` and ```tflite_graph.pbtxt```.  
 ```shell
 python export_tflite_ssd_graph.py \
