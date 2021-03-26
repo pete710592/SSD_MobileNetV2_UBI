@@ -1,4 +1,8 @@
+# SSD_MobileNetV2_UBI  
+Tensorflow implementation of object detections using lightweight models.  
+
 ## Part 1: Environment setup  
+This code was tested with Tensorflow 1.15.0, CUDA 10.0 and Ubuntu 16.04.  
 ## 1-1. Install necessary packages by issuing the following commands:  
 ```shell
 pip install tensorflow-object-detection-api
@@ -20,6 +24,24 @@ python setup.py install
 ```  
 
 ## Part 2: Data preprocessing  
+### 2-1. Download dataset  
+Go to the following link and download.  
+```
+https://drive.google.com/drive/folders/1Rd300b6o1g5XONza8PbKlROUYEINtR0F?usp=sharing
+```  
+Unzip ```images.zip``` files.  
+```shell
+cd ~/SSD_MobileNetV2_UBI/research/object_detection
+unzip images.zip
+```  
+
+### 2-2. Split train / test dataset  
+We use ```split_train_test.ipynb``` to split our dataset.  
+|             Function             |                            Discription                          |
+|---------------------------------:|:----------------------------------------------------------------|
+| Split train dataset to test      | Move ```train``` data to ```test``` by ratio 9:1 (default).     |
+| Undo all changes to train dataset| Move all ```test``` data to ```train```.                        |
+| Calculate the number of files    | Calculate all files (.jpg, .xml) in ```train``` and ```test```. |
 
 ## Part 3: Ready for training  
 First, moving your path to:  
