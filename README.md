@@ -1,5 +1,9 @@
 # SSD_MobileNetV2_UBI  
 Tensorflow implementation of object detections using lightweight models.  
+ - [Part 1: Environment setup](https://github.com/pete710592/SSD_MobileNetV2_UBI#part-1-environment-setup)  
+ - [Part 2: Data preprocessing](https://github.com/pete710592/SSD_MobileNetV2_UBI#part-2-data-preprocessing)  
+ - [Part 3: Ready for training](https://github.com/pete710592/SSD_MobileNetV2_UBI#part-3-ready-for-training)  
+ - [Part 4: Export frozen inference graph for TensorFlow Lite](https://github.com/pete710592/SSD_MobileNetV2_UBI#part-4-export-frozen-inference-graph-for-tensorflow-lite)  
 
 ## Part 1: Environment setup  
 This code was tested with Tensorflow 1.15.0, CUDA 10.0 and Ubuntu 16.04.  
