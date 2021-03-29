@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 def xml_to_csv(path):
     xml_list = []
-    for xml_folder in tqdm(glob.glob(path + '/*.mp4*')):
+    for xml_folder in tqdm(glob.glob(path + '/*')):
         for xml_file in glob.glob('{}/*.xml'.format(xml_folder)):
             tree = ET.parse(xml_file)
             root = tree.getroot()
