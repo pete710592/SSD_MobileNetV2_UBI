@@ -89,13 +89,24 @@ def class_text_to_int(row_label):
 
 Then, generate ```train.record``` and ```test.record```.  
 ```shell
-python generate_tfrecord.py --csv_input=images/train_labels.csv --image_dir=images/train --output_path=training/train.record
-python generate_tfrecord.py --csv_input=images/test_labels.csv --image_dir=images/test --output_path=training/test.record
+python generate_tfrecord.py \
+    --csv_input=images/train_labels.csv \
+    --image_dir=images/train \
+    --output_path=training/train.record  
+```  
+```shell
+python generate_tfrecord.py \
+    --csv_input=images/test_labels.csv \
+    --image_dir=images/test \
+    --output_path=training/test.record
 ```  
 
 ### 3-5. Start training  
 ```shell
-python train.py --logtostderr --train_dir=training/ --pipeline_config_path=training/ssd_mobilenet_v2_quantized_300x300_coco.config
+python train.py \
+    --logtostderr \
+    --train_dir=training \
+    --pipeline_config_path=training/ssd_mobilenet_v2_quantized_300x300_coco.config
 ```  
 
 ## Part 4: Export frozen inference graph for TensorFlow Lite  
