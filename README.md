@@ -29,23 +29,11 @@ python setup.py install
 
 ## Part 2: Data preprocessing  
 ### 2-1. Download dataset  
-Go to the following link and download.  
+Download vehicle-dataset at ```images```.  
 ```
-https://drive.google.com/drive/folders/1Rd300b6o1g5XONza8PbKlROUYEINtR0F?usp=sharing
-```  
-Unzip ```images.zip``` files.  
-```shell
 cd ~/SSD_MobileNetV2_UBI/research/object_detection
-unzip images.zip
+git clone https://github.com/pete710592/UBI_Dataset.git images
 ```  
-
-### 2-2. Split train / test dataset  
-We use ```split_train_test.ipynb``` to split our dataset.  
-|             Function             |                            Discription                          |
-|---------------------------------:|:----------------------------------------------------------------|
-| Split train dataset to test      | Move ```train``` data to ```test``` by ratio 9:1 (default).     |
-| Undo all changes to train dataset| Move all ```test``` data to ```train```.                        |
-| Calculate the number of files    | Calculate all files (.jpg, .xml) in ```train``` and ```test```. |
 
 ## Part 3: Ready for training  
 First, moving your path to:  
@@ -71,7 +59,7 @@ item {
  - Line 189. Change input_path to: ```/root/notebooks/SSD_MobileNetV2_UBI/research/object_detection/training/test.record```  
  - Line 191. Change label_map_path to: ```/root/notebooks/SSD_MobileNetV2_UBI/research/object_detection/training/labelmap.pbtxt```  
 
-### 3-3. Generate ```images/train_labels.csv``` & ```images/test_labels.csv```  
+### 3-3. Generate ```training/train_labels.csv``` & ```training/test_labels.csv```  
 ```shell
 python xml_to_csv.py
 ```  
@@ -90,14 +78,14 @@ def class_text_to_int(row_label):
 Then, generate ```train.record``` and ```test.record```.  
 ```shell
 python generate_tfrecord.py \
-    --csv_input=images/train_labels.csv \
-    --image_dir=images/train \
+    --csv_input=training/train_labels.csv \
+    --image_dir=images \
     --output_path=training/train.record  
 ```  
 ```shell
 python generate_tfrecord.py \
-    --csv_input=images/test_labels.csv \
-    --image_dir=images/test \
+    --csv_input=training/test_labels.csv \
+    --image_dir=images \
     --output_path=training/test.record
 ```  
 
