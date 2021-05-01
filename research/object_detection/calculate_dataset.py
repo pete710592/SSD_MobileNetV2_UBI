@@ -33,6 +33,6 @@ class Calculate_dataset():
 
 if __name__ == '__main__':
     calculate_dataset = Calculate_dataset()
-    calculate_dataset.remove(['vehicles_nighttime'])
+#     calculate_dataset.remove(['vehicles_nighttime'])
     xml, jpg = calculate_dataset.calculate()
     print('xml: {}, jpg: {}'.format(xml, jpg))

@@ -32,16 +32,22 @@ class Xml_to_csv():
     def xml_to_list(self, xml, lst):
         tree = ET.parse(xml)
         root = tree.getroot()
+        fs = tuple()  # for filename & size
+        
+        for filename in root.findall('filename'):
+            fs += ('JPEGImages/'+filename.text,)  # filename
+        
+        for size in root.findall('size'):
+            fs += (size[0].text,                  # size: width
+                   size[1].text,)                 # size: height
+        
         for member in root.findall('object'):
-            if member[2].text == 'vehicle':  # name
-                value = ('JPEGImages/' + member[0].text,  # filename
-                int(member[1][0].text),          # size: width
-                int(member[1][1].text),          # size: height
-                member[2].text,                  # name
-                int(member[3][0].text),          # bndbox: xmin
-                int(member[3][1].text),          # bndbox: ymin
-                int(member[3][2].text),          # bndbox: xmax
-                int(member[3][3].text))          # bndbox: ymax
+            if member[0].text == 'vehicle':       # name
+                value = fs + (member[0].text,     # name
+                int(member[1][0].text),           # bndbox: xmin
+                int(member[1][1].text),           # bndbox: ymin
+                int(member[1][2].text),           # bndbox: xmax
+                int(member[1][3].text))           # bndbox: ymax
                 lst.append(value)
     
     def list_to_df(self):
@@ -61,10 +67,12 @@ class Xml_to_csv():
         print('Done.')
 
 if __name__ == '__main__':
-    folders = glob.glob('images/Annotations/All/*')
+    folders = glob.glob('images/Annotations/All/*.mp4')
     
     # Filters
-    folders.remove('images/Annotations/All/vehicles_nighttime')
+    folders.remove('images/Annotations/All/Fog_01.mp4')
+    folders.remove('images/Annotations/All/Night_01.mp4')
+    folders.remove('images/Annotations/All/Night_02.mp4')
     
     xml_to_csv = Xml_to_csv(folders)
     xml_to_csv.main()

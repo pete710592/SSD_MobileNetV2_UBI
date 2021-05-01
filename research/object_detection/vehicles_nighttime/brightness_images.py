@@ -69,10 +69,11 @@ class Modify_lightness():
 
 if __name__ == '__main__':
     modify_lightness = Modify_lightness()
-    images = glob.glob('../images/JPEGImages/All/vehicles_nighttime/*.jpg')
+    images = glob.glob('../images/JPEGImages/All/Night_02.mp4/*.jpg')
+    sorted(images)
 
     # confirm whether the file path exists
-    save_dir = 'vehicles_nighttime_brightness'
+    save_dir = 'Night_02b.mp4'
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
     
@@ -80,4 +81,5 @@ if __name__ == '__main__':
     for image_path in tqdm(images):
         src = cv2.imread(image_path)
         out = modify_lightness.augment(src)
-        cv2.imwrite(os.path.join(save_dir, image_path.split('/')[-1]), out)
+        save_file = image_path.split('/')[-1].replace('.mp4', 'b.mp4')
+        cv2.imwrite(os.path.join(save_dir, save_file), out)
