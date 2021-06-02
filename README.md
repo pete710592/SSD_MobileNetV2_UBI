@@ -7,20 +7,20 @@ Tensorflow implementation of object detections using lightweight models.
 
 ## Part 1: Environment setup  
 This code was tested with Tensorflow 1.15.0, CUDA 10.0 and Ubuntu 16.04.  
-## 1-1. Install necessary packages by issuing the following commands:  
+### 1-1. Install necessary packages by issuing the following commands:  
 ```shell
 pip install tensorflow-object-detection-api
 pip install tf-slim==1.0
 pip install tensorflow-gpu==1.15
 ```  
 
-## 1-2. Download this repository from GitHub  
+### 1-2. Download this repository from GitHub  
 ```shell
 cd
 git clone https://github.com/pete710592/SSD_MobileNetV2_UBI.git
 ```  
 
-## 1-3. Run setup  
+### 1-3. Run setup  
 ```shell
 cd ~/SSD_MobileNetV2_UBI/research/slim
 python setup.py build
@@ -132,3 +132,5 @@ tflite_convert \
 ## Reference  
 1. https://github.com/EdjeElectronics/TensorFlow-Object-Detection-API-Tutorial-Train-Multiple-Objects-Windows-10  
 2. https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi  
+
+###### tags: `UBI`
