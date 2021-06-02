@@ -56,8 +56,8 @@ class Xml_to_csv():
         self.test_df = pd.DataFrame(self.test_list, columns=column_name)
     
     def df_to_csv(self):
-        self.train_df.to_csv(('training/train_labels.csv'), index=None)
-        self.test_df.to_csv(('training/test_labels.csv'), index=None)
+        self.train_df.to_csv('training/train_labels.csv', index=None)
+        self.test_df.to_csv('training/test_labels.csv', index=None)
         
     def main(self):
         self.split()
@@ -71,8 +71,12 @@ if __name__ == '__main__':
     
     # Filters
     folders.remove('images/Annotations/All/Fog_01.mp4')
-    folders.remove('images/Annotations/All/Night_01.mp4')
-    folders.remove('images/Annotations/All/Night_02.mp4')
+    folders.remove('images/Annotations/All/Night_03.mp4')
+    folders.remove('images/Annotations/All/Night_03b.mp4')
+    folders.remove('images/Annotations/All/Night_04.mp4')
+    folders.remove('images/Annotations/All/Night_04b.mp4')
+    folders.remove('images/Annotations/All/Night_05.mp4')
+    folders.remove('images/Annotations/All/Night_05b.mp4')
     
     xml_to_csv = Xml_to_csv(folders)
     xml_to_csv.main()
