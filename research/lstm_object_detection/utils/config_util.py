@@ -19,7 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from google.protobuf import text_format
 from lstm_object_detection.protos import input_reader_google_pb2  # pylint: disable=unused-import
@@ -37,7 +37,7 @@ def get_configs_from_pipeline_file(pipeline_config_path):
 
   Returns:
     Dictionary of configuration objects. Keys are `model`, `train_config`,
-      `train_input_config`, `eval_config`, `eval_input_config`, `lstm_model`.
+      `train_input_config`, `eval_config`, `eval_input_config`, `lstm_confg`.
       Value are the corresponding config objects.
   """
   pipeline_config = pipeline_pb2.TrainEvalPipelineConfig()

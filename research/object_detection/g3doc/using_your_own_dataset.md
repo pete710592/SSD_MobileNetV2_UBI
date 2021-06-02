@@ -2,7 +2,7 @@
 
 [TOC]
 
-To use your own dataset in TensorFlow Object Detection API, you must convert it
+To use your own dataset in Tensorflow Object Detection API, you must convert it
 into the [TFRecord file format](https://www.tensorflow.org/api_guides/python/python_io#tfrecords_format_details).
 This document outlines how to write a script to generate the TFRecord file.
 
@@ -76,7 +76,7 @@ def create_cat_tf_example(encoded_cat_image_data):
       'image/width': dataset_util.int64_feature(width),
       'image/filename': dataset_util.bytes_feature(filename),
       'image/source_id': dataset_util.bytes_feature(filename),
-      'image/encoded': dataset_util.bytes_feature(encoded_image_data),
+      'image/encoded': dataset_util.bytes_feature(encoded_cat_image_data),
       'image/format': dataset_util.bytes_feature(image_format),
       'image/object/bbox/xmin': dataset_util.float_list_feature(xmins),
       'image/object/bbox/xmax': dataset_util.float_list_feature(xmaxs),
@@ -177,7 +177,7 @@ Instead of writing all tf.Example protos to a single file as shown in
 
 ```python
 import contextlib2
-from object_detection.dataset_tools import tf_record_creation_util
+from google3.third_party.tensorflow_models.object_detection.dataset_tools import tf_record_creation_util
 
 num_shards=10
 output_filebase='/path/to/train_dataset.record'

@@ -1,4 +1,3 @@
-# Lint as: python2, python3
 # Copyright 2018 The TensorFlow Authors All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,12 +17,11 @@
 import numpy as np
 import six
 import tensorflow as tf
-from tensorflow.contrib import slim as contrib_slim
 
 from deeplab.core import xception
 from tensorflow.contrib.slim.nets import resnet_utils
 
-slim = contrib_slim
+slim = tf.contrib.slim
 
 
 def create_test_input(batch, height, width, channels):
@@ -31,14 +29,13 @@ def create_test_input(batch, height, width, channels):
   if None in [batch, height, width, channels]:
     return tf.placeholder(tf.float32, (batch, height, width, channels))
   else:
-    return tf.cast(
+    return tf.to_float(
         np.tile(
             np.reshape(
                 np.reshape(np.arange(height), [height, 1]) +
                 np.reshape(np.arange(width), [1, width]),
                 [1, height, width, 1]),
-            [batch, 1, 1, channels]),
-        tf.float32)
+            [batch, 1, 1, channels]))
 
 
 class UtilityFunctionTest(tf.test.TestCase):
@@ -61,15 +58,15 @@ class UtilityFunctionTest(tf.test.TestCase):
 
     y1 = slim.separable_conv2d(x, 1, [3, 3], depth_multiplier=1,
                                stride=1, scope='Conv')
-    y1_expected = tf.cast([[14, 28, 43, 26],
-                           [28, 48, 66, 37],
-                           [43, 66, 84, 46],
-                           [26, 37, 46, 22]], tf.float32)
+    y1_expected = tf.to_float([[14, 28, 43, 26],
+                               [28, 48, 66, 37],
+                               [43, 66, 84, 46],
+                               [26, 37, 46, 22]])
     y1_expected = tf.reshape(y1_expected, [1, n, n, 1])
 
     y2 = resnet_utils.subsample(y1, 2)
-    y2_expected = tf.cast([[14, 43],
-                           [43, 84]], tf.float32)
+    y2_expected = tf.to_float([[14, 43],
+                               [43, 84]])
     y2_expected = tf.reshape(y2_expected, [1, n2, n2, 1])
 
     y3 = xception.separable_conv2d_same(x, 1, 3, depth_multiplier=1,
@@ -79,8 +76,8 @@ class UtilityFunctionTest(tf.test.TestCase):
 
     y4 = slim.separable_conv2d(x, 1, [3, 3], depth_multiplier=1,
                                stride=2, scope='Conv')
-    y4_expected = tf.cast([[48, 37],
-                           [37, 22]], tf.float32)
+    y4_expected = tf.to_float([[48, 37],
+                               [37, 22]])
     y4_expected = tf.reshape(y4_expected, [1, n2, n2, 1])
 
     with self.test_session() as sess:
@@ -108,17 +105,17 @@ class UtilityFunctionTest(tf.test.TestCase):
 
     y1 = slim.separable_conv2d(x, 1, [3, 3], depth_multiplier=1,
                                stride=1, scope='Conv')
-    y1_expected = tf.cast([[14, 28, 43, 58, 34],
-                           [28, 48, 66, 84, 46],
-                           [43, 66, 84, 102, 55],
-                           [58, 84, 102, 120, 64],
-                           [34, 46, 55, 64, 30]], tf.float32)
+    y1_expected = tf.to_float([[14, 28, 43, 58, 34],
+                               [28, 48, 66, 84, 46],
+                               [43, 66, 84, 102, 55],
+                               [58, 84, 102, 120, 64],
+                               [34, 46, 55, 64, 30]])
     y1_expected = tf.reshape(y1_expected, [1, n, n, 1])
 
     y2 = resnet_utils.subsample(y1, 2)
-    y2_expected = tf.cast([[14, 43, 34],
-                           [43, 84, 55],
-                           [34, 55, 30]], tf.float32)
+    y2_expected = tf.to_float([[14, 43, 34],
+                               [43, 84, 55],
+                               [34, 55, 30]])
     y2_expected = tf.reshape(y2_expected, [1, n2, n2, 1])
 
     y3 = xception.separable_conv2d_same(x, 1, 3, depth_multiplier=1,
@@ -214,8 +211,8 @@ class XceptionNetworkTest(tf.test.TestCase):
 
   def testClassificationEndPoints(self):
     global_pool = True
-    num_classes = 3
-    inputs = create_test_input(2, 32, 32, 3)
+    num_classes = 10
+    inputs = create_test_input(2, 224, 224, 3)
     with slim.arg_scope(xception.xception_arg_scope()):
       logits, end_points = self._xception_small(
           inputs,
@@ -234,8 +231,8 @@ class XceptionNetworkTest(tf.test.TestCase):
 
   def testEndpointNames(self):
     global_pool = True
-    num_classes = 3
-    inputs = create_test_input(2, 32, 32, 3)
+    num_classes = 10
+    inputs = create_test_input(2, 224, 224, 3)
     with slim.arg_scope(xception.xception_arg_scope()):
       _, end_points = self._xception_small(
           inputs,
@@ -293,12 +290,12 @@ class XceptionNetworkTest(tf.test.TestCase):
         'xception/logits',
         'predictions',
     ]
-    self.assertItemsEqual(list(end_points.keys()), expected)
+    self.assertItemsEqual(end_points.keys(), expected)
 
   def testClassificationShapes(self):
     global_pool = True
-    num_classes = 3
-    inputs = create_test_input(2, 64, 64, 3)
+    num_classes = 10
+    inputs = create_test_input(2, 224, 224, 3)
     with slim.arg_scope(xception.xception_arg_scope()):
       _, end_points = self._xception_small(
           inputs,
@@ -306,20 +303,20 @@ class XceptionNetworkTest(tf.test.TestCase):
           global_pool=global_pool,
           scope='xception')
       endpoint_to_shape = {
-          'xception/entry_flow/conv1_1': [2, 32, 32, 32],
-          'xception/entry_flow/block1': [2, 16, 16, 1],
-          'xception/entry_flow/block2': [2, 8, 8, 2],
-          'xception/entry_flow/block4': [2, 4, 4, 4],
-          'xception/middle_flow/block1': [2, 4, 4, 4],
-          'xception/exit_flow/block1': [2, 2, 2, 8],
-          'xception/exit_flow/block2': [2, 2, 2, 16]}
+          'xception/entry_flow/conv1_1': [2, 112, 112, 32],
+          'xception/entry_flow/block1': [2, 56, 56, 1],
+          'xception/entry_flow/block2': [2, 28, 28, 2],
+          'xception/entry_flow/block4': [2, 14, 14, 4],
+          'xception/middle_flow/block1': [2, 14, 14, 4],
+          'xception/exit_flow/block1': [2, 7, 7, 8],
+          'xception/exit_flow/block2': [2, 7, 7, 16]}
       for endpoint, shape in six.iteritems(endpoint_to_shape):
         self.assertListEqual(end_points[endpoint].get_shape().as_list(), shape)
 
   def testFullyConvolutionalEndpointShapes(self):
     global_pool = False
-    num_classes = 3
-    inputs = create_test_input(2, 65, 65, 3)
+    num_classes = 10
+    inputs = create_test_input(2, 321, 321, 3)
     with slim.arg_scope(xception.xception_arg_scope()):
       _, end_points = self._xception_small(
           inputs,
@@ -327,21 +324,21 @@ class XceptionNetworkTest(tf.test.TestCase):
           global_pool=global_pool,
           scope='xception')
       endpoint_to_shape = {
-          'xception/entry_flow/conv1_1': [2, 33, 33, 32],
-          'xception/entry_flow/block1': [2, 17, 17, 1],
-          'xception/entry_flow/block2': [2, 9, 9, 2],
-          'xception/entry_flow/block4': [2, 5, 5, 4],
-          'xception/middle_flow/block1': [2, 5, 5, 4],
-          'xception/exit_flow/block1': [2, 3, 3, 8],
-          'xception/exit_flow/block2': [2, 3, 3, 16]}
+          'xception/entry_flow/conv1_1': [2, 161, 161, 32],
+          'xception/entry_flow/block1': [2, 81, 81, 1],
+          'xception/entry_flow/block2': [2, 41, 41, 2],
+          'xception/entry_flow/block4': [2, 21, 21, 4],
+          'xception/middle_flow/block1': [2, 21, 21, 4],
+          'xception/exit_flow/block1': [2, 11, 11, 8],
+          'xception/exit_flow/block2': [2, 11, 11, 16]}
       for endpoint, shape in six.iteritems(endpoint_to_shape):
         self.assertListEqual(end_points[endpoint].get_shape().as_list(), shape)
 
   def testAtrousFullyConvolutionalEndpointShapes(self):
     global_pool = False
-    num_classes = 3
+    num_classes = 10
     output_stride = 8
-    inputs = create_test_input(2, 65, 65, 3)
+    inputs = create_test_input(2, 321, 321, 3)
     with slim.arg_scope(xception.xception_arg_scope()):
       _, end_points = self._xception_small(
           inputs,
@@ -350,12 +347,12 @@ class XceptionNetworkTest(tf.test.TestCase):
           output_stride=output_stride,
           scope='xception')
       endpoint_to_shape = {
-          'xception/entry_flow/block1': [2, 17, 17, 1],
-          'xception/entry_flow/block2': [2, 9, 9, 2],
-          'xception/entry_flow/block4': [2, 9, 9, 4],
-          'xception/middle_flow/block1': [2, 9, 9, 4],
-          'xception/exit_flow/block1': [2, 9, 9, 8],
-          'xception/exit_flow/block2': [2, 9, 9, 16]}
+          'xception/entry_flow/block1': [2, 81, 81, 1],
+          'xception/entry_flow/block2': [2, 41, 41, 2],
+          'xception/entry_flow/block4': [2, 41, 41, 4],
+          'xception/middle_flow/block1': [2, 41, 41, 4],
+          'xception/exit_flow/block1': [2, 41, 41, 8],
+          'xception/exit_flow/block2': [2, 41, 41, 16]}
       for endpoint, shape in six.iteritems(endpoint_to_shape):
         self.assertListEqual(end_points[endpoint].get_shape().as_list(), shape)
 
@@ -463,26 +460,8 @@ class XceptionNetworkTest(tf.test.TestCase):
           inputs,
           num_classes=10,
           reuse=True)
-    self.assertItemsEqual(list(end_points0.keys()), list(end_points1.keys()))
+    self.assertItemsEqual(end_points0.keys(), end_points1.keys())
 
-  def testUseBoundedAcitvation(self):
-    global_pool = False
-    num_classes = 3
-    output_stride = 16
-    for use_bounded_activation in (True, False):
-      tf.reset_default_graph()
-      inputs = create_test_input(2, 65, 65, 3)
-      with slim.arg_scope(xception.xception_arg_scope(
-          use_bounded_activation=use_bounded_activation)):
-        _, _ = self._xception_small(
-            inputs,
-            num_classes,
-            global_pool=global_pool,
-            output_stride=output_stride,
-            scope='xception')
-        for node in tf.get_default_graph().as_graph_def().node:
-          if node.op.startswith('Relu'):
-            self.assertEqual(node.op == 'Relu6', use_bounded_activation)
 
 if __name__ == '__main__':
   tf.test.main()

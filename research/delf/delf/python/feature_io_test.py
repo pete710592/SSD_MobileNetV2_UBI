@@ -20,13 +20,10 @@ from __future__ import print_function
 
 import os
 
-from absl import flags
 import numpy as np
 import tensorflow as tf
 
 from delf import feature_io
-
-FLAGS = flags.FLAGS
 
 
 def create_data():
@@ -84,7 +81,8 @@ class DelfFeaturesIoTest(tf.test.TestCase):
   def testWriteAndReadToFile(self):
     locations, scales, descriptors, attention, orientations = create_data()
 
-    filename = os.path.join(FLAGS.test_tmpdir, 'test.delf')
+    tmpdir = tf.test.get_temp_dir()
+    filename = os.path.join(tmpdir, 'test.delf')
     feature_io.WriteToFile(filename, locations, scales, descriptors, attention,
                            orientations)
     data_read = feature_io.ReadFromFile(filename)
@@ -94,18 +92,6 @@ class DelfFeaturesIoTest(tf.test.TestCase):
     self.assertAllEqual(descriptors, data_read[2])
     self.assertAllEqual(attention, data_read[3])
     self.assertAllEqual(orientations, data_read[4])
-
-  def testWriteAndReadToFileEmptyFile(self):
-    filename = os.path.join(FLAGS.test_tmpdir, 'test.delf')
-    feature_io.WriteToFile(filename, np.array([]), np.array([]), np.array([]),
-                           np.array([]), np.array([]))
-    data_read = feature_io.ReadFromFile(filename)
-
-    self.assertAllEqual(np.array([]), data_read[0])
-    self.assertAllEqual(np.array([]), data_read[1])
-    self.assertAllEqual(np.array([]), data_read[2])
-    self.assertAllEqual(np.array([]), data_read[3])
-    self.assertAllEqual(np.array([]), data_read[4])
 
 
 if __name__ == '__main__':

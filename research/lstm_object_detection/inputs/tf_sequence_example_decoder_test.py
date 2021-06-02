@@ -16,7 +16,7 @@
 """Tests for lstm_object_detection.tf_sequence_example_decoder."""
 
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from tensorflow.core.example import example_pb2
 from tensorflow.core.example import feature_pb2
 from tensorflow.python.framework import dtypes

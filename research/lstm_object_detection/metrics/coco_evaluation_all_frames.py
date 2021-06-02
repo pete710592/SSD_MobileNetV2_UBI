@@ -15,7 +15,7 @@
 
 """Class for evaluating video object detections with COCO metrics."""
 
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 
 from object_detection.core import standard_fields
 from object_detection.metrics import coco_evaluation

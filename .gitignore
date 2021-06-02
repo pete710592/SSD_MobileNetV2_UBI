@@ -1,0 +1,8 @@
+# Large files
+images
+training
+TFLite_model
+
+# Catche files
+.ipynb_checkpoints
+__pycache__

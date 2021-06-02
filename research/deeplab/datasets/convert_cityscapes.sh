@@ -21,7 +21,7 @@
 # Cityscapes at https://github.com/mcordts/cityscapesScripts.
 #
 # Usage:
-#   bash ./convert_cityscapes.sh
+#   bash ./preprocess_cityscapes.sh
 #
 # The folder structure is assumed to be:
 #  + datasets
@@ -41,8 +41,6 @@ WORK_DIR="."
 
 # Root path for Cityscapes dataset.
 CITYSCAPES_ROOT="${WORK_DIR}/cityscapes"
-
-export PYTHONPATH="${CITYSCAPES_ROOT}:${PYTHONPATH}"
 
 # Create training labels.
 python "${CITYSCAPES_ROOT}/cityscapesscripts/preparation/createTrainIdLabelImgs.py"

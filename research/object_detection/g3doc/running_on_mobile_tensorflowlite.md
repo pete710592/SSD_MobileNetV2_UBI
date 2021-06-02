@@ -1,7 +1,5 @@
 # Running on mobile with TensorFlow Lite
 
-[![TensorFlow 1.15](https://img.shields.io/badge/TensorFlow-1.15-FF6F00?logo=tensorflow)](https://github.com/tensorflow/tensorflow/releases/tag/v1.15.0)
-
 In this section, we will show you how to use [TensorFlow
 Lite](https://www.tensorflow.org/mobile/tflite/) to get a smaller model and
 allow you take advantage of ops that have been optimized for mobile devices.
@@ -58,7 +56,7 @@ via the following command. For a quantized model, run this from the tensorflow/
 directory:
 
 ```shell
-bazel run -c opt tensorflow/lite/toco:toco -- \
+bazel run --config=opt tensorflow/lite/toco:toco -- \
 --input_file=$OUTPUT_DIR/tflite_graph.pb \
 --output_file=$OUTPUT_DIR/detect.tflite \
 --input_shapes=1,300,300,3 \
@@ -77,14 +75,14 @@ are named 'TFLite_Detection_PostProcess', 'TFLite_Detection_PostProcess:1',
 'TFLite_Detection_PostProcess:2', and 'TFLite_Detection_PostProcess:3' and
 represent four arrays: detection_boxes, detection_classes, detection_scores, and
 num_detections. The documentation for other flags used in this command is
-[here](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/g3doc/convert/cmdline.md).
+[here](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/g3doc/convert/cmdline_reference.md).
 If things ran successfully, you should now see a third file in the /tmp/tflite
 directory called detect.tflite. This file contains the graph and all model
 parameters and can be run via the TensorFlow Lite interpreter on the Android
 device. For a floating point model, run this from the tensorflow/ directory:
 
 ```shell
-bazel run -c opt tensorflow/lite/toco:toco -- \
+bazel run --config=opt tensorflow/lite/toco:toco -- \
 --input_file=$OUTPUT_DIR/tflite_graph.pb \
 --output_file=$OUTPUT_DIR/detect.tflite \
 --input_shapes=1,300,300,3 \
@@ -96,44 +94,46 @@ bazel run -c opt tensorflow/lite/toco:toco -- \
 
 # Running our model on Android
 
-To run our TensorFlow Lite model on device, we will use Android Studio to build
-and run the TensorFlow Lite detection example with the new model. The example is
-found in the
-[TensorFlow examples repository](https://github.com/tensorflow/examples) under
-`/lite/examples/object_detection`. The example can be built with
-[Android Studio](https://developer.android.com/studio/index.html), and requires
-the
-[Android SDK with build tools](https://developer.android.com/tools/revisions/build-tools.html)
-that support API >= 21. Additional details are available on the
-[TensorFlow Lite example page](https://github.com/tensorflow/examples/tree/master/lite/examples/object_detection/android).
+To run our TensorFlow Lite model on device, we will need to install the Android
+NDK and SDK. The current recommended Android NDK version is 14b and can be found
+on the [NDK
+Archives](https://developer.android.com/ndk/downloads/older_releases.html#ndk-14b-downloads)
+page. Android SDK and build tools can be [downloaded
+separately](https://developer.android.com/tools/revisions/build-tools.html) or
+used as part of [Android
+Studio](https://developer.android.com/studio/index.html). To build the
+TensorFlow Lite Android demo, build tools require API >= 23 (but it will run on
+devices with API >= 21). Additional details are available on the [TensorFlow
+Lite Android App
+page](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/lite/java/demo/README.md).
 
 Next we need to point the app to our new detect.tflite file and give it the
 names of our new labels. Specifically, we will copy our TensorFlow Lite
 flatbuffer to the app assets directory with the following command:
 
 ```shell
-mkdir $TF_EXAMPLES/lite/examples/object_detection/android/app/src/main/assets
 cp /tmp/tflite/detect.tflite \
-  $TF_EXAMPLES/lite/examples/object_detection/android/app/src/main/assets
+//tensorflow/lite/examples/android/app/src/main/assets
 ```
 
-You will also need to copy your new labelmap labelmap.txt to the assets
+You will also need to copy your new labelmap labels_list.txt to the assets
 directory.
 
-We will now edit the gradle build file to use these assets. First, open the
-`build.gradle` file
-`$TF_EXAMPLES/lite/examples/object_detection/android/app/build.gradle`. Comment
-out the model download script to avoid your assets being overwritten: `// apply
-from:'download_model.gradle'` ```
+We will now edit the BUILD file to point to this new model. First, open the
+BUILD file tensorflow/lite/examples/android/BUILD. Then find the assets
+section, and replace the line “@tflite_mobilenet_ssd_quant//:detect.tflite”
+(which by default points to a COCO pretrained model) with the path to your new
+TFLite model
+“//tensorflow/lite/examples/android/app/src/main/assets:detect.tflite”.
+Finally, change the last line in assets section to use the new label map as
+well.
 
-If your model is named `detect.tflite`, and your labels file `labelmap.txt`, the
-example will use them automatically as long as they've been properly copied into
-the base assets directory. If you need to use a custom path or filename, open up
-the
-$TF_EXAMPLES/lite/examples/object_detection/android/app/src/main/java/org/tensorflow/demo/DetectorActivity.java
+We will also need to tell our app to use the new label map. In order to do this,
+open up the
+tensorflow/lite/examples/android/app/src/main/java/org/tensorflow/demo/DetectorActivity.java
 file in a text editor and find the definition of TF_OD_API_LABELS_FILE. Update
 this path to point to your new label map file:
-"labels_list.txt". Note that if your model is quantized,
+"file:///android_asset/labels_list.txt". Note that if your model is quantized,
 the flag TF_OD_API_IS_QUANTIZED is set to true, and if your model is floating
 point, the flag TF_OD_API_IS_QUANTIZED is set to false. This new section of
 DetectorActivity.java should now look as follows for a quantized model:
@@ -141,9 +141,23 @@ DetectorActivity.java should now look as follows for a quantized model:
 ```shell
   private static final boolean TF_OD_API_IS_QUANTIZED = true;
   private static final String TF_OD_API_MODEL_FILE = "detect.tflite";
-  private static final String TF_OD_API_LABELS_FILE = "labels_list.txt";
+  private static final String TF_OD_API_LABELS_FILE = "file:///android_asset/labels_list.txt";
 ```
 
-Once you’ve copied the TensorFlow Lite model and edited the gradle build script
-to not use the downloaded assets, you can build and deploy the app using the
-usual Android Studio build process.
+Once you’ve copied the TensorFlow Lite file and edited your BUILD and
+DetectorActivity.java files, you can build the demo app, run this bazel command
+from the tensorflow directory:
+
+```shell
+ bazel build -c opt --config=android_arm{,64} --cxxopt='--std=c++11'
+"//tensorflow/lite/examples/android:tflite_demo"
+```
+
+Now install the demo on a
+[debug-enabled](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/examples/android#install)
+Android phone via [Android Debug
+Bridge](https://developer.android.com/studio/command-line/adb) (adb):
+
+```shell
+adb install bazel-bin/tensorflow/lite/examples/android/tflite_demo.apk
+```

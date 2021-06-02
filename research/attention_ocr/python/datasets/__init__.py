@@ -13,7 +13,7 @@
 # limitations under the License.
 # ==============================================================================
 
-from datasets import fsns
-from datasets import fsns_test
+import fsns
+import fsns_test
 
 __all__ = [fsns, fsns_test]

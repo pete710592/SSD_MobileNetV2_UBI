@@ -1,4 +1,3 @@
-# Lint as: python2, python3
 # Copyright 2018 The TensorFlow Authors All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,7 +54,7 @@ class VisualizationUtilTest(tf.test.TestCase):
 
   def testUnExpectedLabelValueForLabelToPASCALColorImage(self):
     """Raise ValueError when input value exceeds range."""
-    label = np.array([[120], [600]])
+    label = np.array([[120], [300]])
     with self.assertRaises(ValueError):
       get_dataset_colormap.label_to_color_image(
           label, get_dataset_colormap.get_pascal_name())

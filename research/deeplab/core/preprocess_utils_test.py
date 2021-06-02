@@ -1,4 +1,3 @@
-# Lint as: python2, python3
 # Copyright 2018 The TensorFlow Authors All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +14,10 @@
 # ==============================================================================
 
 """Tests for preprocess_utils."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import numpy as np
-from six.moves import range
 import tensorflow as tf
 
+from tensorflow.python.framework import errors
 from deeplab.core import preprocess_utils
 
 
@@ -110,7 +105,7 @@ class PreprocessUtilsTest(tf.test.TestCase):
                               [[3., 4.],
                                [5., 3.]]])
     image = tf.convert_to_tensor(numpy_image)
-    tf.compat.v1.set_random_seed(53)
+    tf.set_random_seed(53)
 
     with self.test_session() as sess:
       actual, is_flipped = preprocess_utils.flip_dim(
@@ -155,7 +150,7 @@ class PreprocessUtilsTest(tf.test.TestCase):
     crop_height, crop_width = 10, 20
     image = np.random.randint(0, 256, size=(100, 200, 3))
 
-    tf.compat.v1.set_random_seed(37)
+    tf.set_random_seed(37)
     image_placeholder = tf.placeholder(tf.int32, shape=(None, None, 3))
     [cropped] = preprocess_utils.random_crop(
         [image_placeholder], crop_height, crop_width)
@@ -165,7 +160,7 @@ class PreprocessUtilsTest(tf.test.TestCase):
       self.assertTupleEqual(cropped_image.shape, (crop_height, crop_width, 3))
 
   def testReturnDifferentCropAreasOnTwoEvals(self):
-    tf.compat.v1.set_random_seed(0)
+    tf.set_random_seed(0)
 
     crop_height, crop_width = 2, 3
     image = np.random.randint(0, 256, size=(100, 200, 3))
@@ -179,7 +174,7 @@ class PreprocessUtilsTest(tf.test.TestCase):
       self.assertFalse(np.isclose(crop0, crop1).all())
 
   def testReturnConsistenCropsOfImagesInTheList(self):
-    tf.compat.v1.set_random_seed(0)
+    tf.set_random_seed(0)
 
     height, width = 10, 20
     crop_height, crop_width = 2, 3
@@ -208,7 +203,7 @@ class PreprocessUtilsTest(tf.test.TestCase):
         [image1, image2], crop_height, crop_width)
 
     with self.test_session() as sess:
-      with self.assertRaises(tf.errors.InvalidArgumentError):
+      with self.assertRaises(errors.InvalidArgumentError):
         sess.run(cropped, feed_dict={image1: np.random.rand(4, 5, 3),
                                      image2: np.random.rand(4, 6, 1)})
 
@@ -221,7 +216,7 @@ class PreprocessUtilsTest(tf.test.TestCase):
 
     with self.test_session() as sess:
       with self.assertRaisesWithPredicateMatch(
-          tf.errors.InvalidArgumentError,
+          errors.InvalidArgumentError,
           'Wrong height for tensor'):
         sess.run(cropped, feed_dict={image1: np.random.rand(4, 5, 3),
                                      image2: np.random.rand(3, 5, 1)})
@@ -235,7 +230,7 @@ class PreprocessUtilsTest(tf.test.TestCase):
 
     with self.test_session() as sess:
       with self.assertRaisesWithPredicateMatch(
-          tf.errors.InvalidArgumentError,
+          errors.InvalidArgumentError,
           'Crop size greater than the image size.'):
         sess.run(cropped, feed_dict={image1: np.random.rand(4, 5, 3),
                                      image2: np.random.rand(4, 5, 1)})
@@ -257,27 +252,25 @@ class PreprocessUtilsTest(tf.test.TestCase):
                                    [255, 3, 5, 255, 255],
                                    [255, 255, 255, 255, 255]]]).astype(dtype)
 
-      with self.session() as sess:
+      with self.test_session():
+        image_placeholder = tf.placeholder(tf.float32)
         padded_image = preprocess_utils.pad_to_bounding_box(
-            image, 2, 1, 5, 5, 255)
-        padded_image = sess.run(padded_image)
-        self.assertAllClose(padded_image, expected_image)
-        # Add batch size = 1 to image.
-        padded_image = preprocess_utils.pad_to_bounding_box(
-            np.expand_dims(image, 0), 2, 1, 5, 5, 255)
-        padded_image = sess.run(padded_image)
-        self.assertAllClose(padded_image, np.expand_dims(expected_image, 0))
+            image_placeholder, 2, 1, 5, 5, 255)
+        self.assertAllClose(padded_image.eval(
+            feed_dict={image_placeholder: image}), expected_image)
 
   def testReturnOriginalImageWhenTargetSizeIsEqualToImageSize(self):
     image = np.dstack([[[5, 6],
                         [9, 0]],
                        [[4, 3],
                         [3, 5]]])
-    with self.session() as sess:
+
+    with self.test_session():
+      image_placeholder = tf.placeholder(tf.float32)
       padded_image = preprocess_utils.pad_to_bounding_box(
-          image, 0, 0, 2, 2, 255)
-      padded_image = sess.run(padded_image)
-      self.assertAllClose(padded_image, image)
+          image_placeholder, 0, 0, 2, 2, 255)
+      self.assertAllClose(padded_image.eval(
+          feed_dict={image_placeholder: image}), image)
 
   def testDieOnTargetSizeGreaterThanImageSize(self):
     image = np.dstack([[[5, 6],
@@ -289,13 +282,13 @@ class PreprocessUtilsTest(tf.test.TestCase):
       padded_image = preprocess_utils.pad_to_bounding_box(
           image_placeholder, 0, 0, 2, 1, 255)
       with self.assertRaisesWithPredicateMatch(
-          tf.errors.InvalidArgumentError,
+          errors.InvalidArgumentError,
           'target_width must be >= width'):
         padded_image.eval(feed_dict={image_placeholder: image})
       padded_image = preprocess_utils.pad_to_bounding_box(
           image_placeholder, 0, 0, 1, 2, 255)
       with self.assertRaisesWithPredicateMatch(
-          tf.errors.InvalidArgumentError,
+          errors.InvalidArgumentError,
           'target_height must be >= height'):
         padded_image.eval(feed_dict={image_placeholder: image})
 
@@ -309,11 +302,11 @@ class PreprocessUtilsTest(tf.test.TestCase):
       padded_image = preprocess_utils.pad_to_bounding_box(
           image_placeholder, 3, 0, 4, 4, 255)
       with self.assertRaisesWithPredicateMatch(
-          tf.errors.InvalidArgumentError,
+          errors.InvalidArgumentError,
           'target size not possible with the given target offsets'):
         padded_image.eval(feed_dict={image_placeholder: image})
 
-  def testDieIfImageTensorRankIsTwo(self):
+  def testDieIfImageTensorRankIsNotThree(self):
     image = np.vstack([[5, 6],
                        [9, 0]])
     with self.test_session():
@@ -321,7 +314,7 @@ class PreprocessUtilsTest(tf.test.TestCase):
       padded_image = preprocess_utils.pad_to_bounding_box(
           image_placeholder, 0, 0, 2, 2, 255)
       with self.assertRaisesWithPredicateMatch(
-          tf.errors.InvalidArgumentError,
+          errors.InvalidArgumentError,
           'Wrong image tensor rank'):
         padded_image.eval(feed_dict={image_placeholder: image})
 
@@ -336,7 +329,7 @@ class PreprocessUtilsTest(tf.test.TestCase):
                            (50, 100, 3),
                            (30, 100, 3)]
     for i, test_shape in enumerate(test_shapes):
-      image = tf.random.normal([test_shape[0], test_shape[1], 3])
+      image = tf.random_normal([test_shape[0], test_shape[1], 3])
       new_tensor_list = preprocess_utils.resize_to_range(
           image=image,
           label=None,
@@ -362,8 +355,8 @@ class PreprocessUtilsTest(tf.test.TestCase):
                                  (49, 97, 1),
                                  (33, 97, 1)]
     for i, test_shape in enumerate(test_shapes):
-      image = tf.random.normal([test_shape[0], test_shape[1], 3])
-      label = tf.random.normal([test_shape[0], test_shape[1], 1])
+      image = tf.random_normal([test_shape[0], test_shape[1], 3])
+      label = tf.random_normal([test_shape[0], test_shape[1], 1])
       new_tensor_list = preprocess_utils.resize_to_range(
           image=image,
           label=label,
@@ -390,8 +383,8 @@ class PreprocessUtilsTest(tf.test.TestCase):
                                  (5, 49, 97),
                                  (5, 33, 97)]
     for i, test_shape in enumerate(test_shapes):
-      image = tf.random.normal([test_shape[0], test_shape[1], 3])
-      label = tf.random.normal([5, test_shape[0], test_shape[1]])
+      image = tf.random_normal([test_shape[0], test_shape[1], 3])
+      label = tf.random_normal([5, test_shape[0], test_shape[1]])
       new_tensor_list = preprocess_utils.resize_to_range(
           image=image,
           label=label,
@@ -420,90 +413,14 @@ class PreprocessUtilsTest(tf.test.TestCase):
                                  (49, 97, 1),
                                  (33, 97, 1)]
     for i, test_shape in enumerate(test_shapes):
-      image = tf.random.normal([test_shape[0], test_shape[1], 3])
-      label = tf.random.normal([test_shape[0], test_shape[1], 1])
+      image = tf.random_normal([test_shape[0], test_shape[1], 3])
+      label = tf.random_normal([test_shape[0], test_shape[1], 1])
       new_tensor_list = preprocess_utils.resize_to_range(
           image=image,
           label=label,
           min_size=min_size,
           max_size=max_size,
           factor=factor,
-          align_corners=True)
-      with self.test_session() as session:
-        new_tensor_list = session.run(new_tensor_list)
-        self.assertEqual(new_tensor_list[0].shape, expected_image_shape_list[i])
-        self.assertEqual(new_tensor_list[1].shape, expected_label_shape_list[i])
-
-  def testResizeTensorsToRangeWithEqualMaxSize(self):
-    test_shapes = [[97, 38],
-                   [96, 97]]
-    # Make max_size equal to the larger value of test_shapes.
-    min_size = 97
-    max_size = 97
-    factor = 8
-    expected_image_shape_list = [(97, 41, 3),
-                                 (97, 97, 3)]
-    expected_label_shape_list = [(97, 41, 1),
-                                 (97, 97, 1)]
-    for i, test_shape in enumerate(test_shapes):
-      image = tf.random.normal([test_shape[0], test_shape[1], 3])
-      label = tf.random.normal([test_shape[0], test_shape[1], 1])
-      new_tensor_list = preprocess_utils.resize_to_range(
-          image=image,
-          label=label,
-          min_size=min_size,
-          max_size=max_size,
-          factor=factor,
-          align_corners=True)
-      with self.test_session() as session:
-        new_tensor_list = session.run(new_tensor_list)
-        self.assertEqual(new_tensor_list[0].shape, expected_image_shape_list[i])
-        self.assertEqual(new_tensor_list[1].shape, expected_label_shape_list[i])
-
-  def testResizeTensorsToRangeWithPotentialErrorInTFCeil(self):
-    test_shape = [3936, 5248]
-    # Make max_size equal to the larger value of test_shapes.
-    min_size = 1441
-    max_size = 1441
-    factor = 16
-    expected_image_shape = (1089, 1441, 3)
-    expected_label_shape = (1089, 1441, 1)
-    image = tf.random.normal([test_shape[0], test_shape[1], 3])
-    label = tf.random.normal([test_shape[0], test_shape[1], 1])
-    new_tensor_list = preprocess_utils.resize_to_range(
-        image=image,
-        label=label,
-        min_size=min_size,
-        max_size=max_size,
-        factor=factor,
-        align_corners=True)
-    with self.test_session() as session:
-      new_tensor_list = session.run(new_tensor_list)
-      self.assertEqual(new_tensor_list[0].shape, expected_image_shape)
-      self.assertEqual(new_tensor_list[1].shape, expected_label_shape)
-
-  def testResizeTensorsToRangeWithEqualMaxSizeWithoutAspectRatio(self):
-    test_shapes = [[97, 38],
-                   [96, 97]]
-    # Make max_size equal to the larger value of test_shapes.
-    min_size = 97
-    max_size = 97
-    factor = 8
-    keep_aspect_ratio = False
-    expected_image_shape_list = [(97, 97, 3),
-                                 (97, 97, 3)]
-    expected_label_shape_list = [(97, 97, 1),
-                                 (97, 97, 1)]
-    for i, test_shape in enumerate(test_shapes):
-      image = tf.random.normal([test_shape[0], test_shape[1], 3])
-      label = tf.random.normal([test_shape[0], test_shape[1], 1])
-      new_tensor_list = preprocess_utils.resize_to_range(
-          image=image,
-          label=label,
-          min_size=min_size,
-          max_size=max_size,
-          factor=factor,
-          keep_aspect_ratio=keep_aspect_ratio,
           align_corners=True)
       with self.test_session() as session:
         new_tensor_list = session.run(new_tensor_list)

@@ -1,4 +1,3 @@
-# Lint as: python2, python3
 # Copyright 2018 The TensorFlow Authors All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,11 +25,10 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
-from tensorflow.contrib import slim as contrib_slim
 
 from deeplab.core import utils
 
-slim = contrib_slim
+slim = tf.contrib.slim
 
 # Local constants.
 _META_ARCHITECTURE_SCOPE = 'meta_architecture'
@@ -66,12 +64,12 @@ def dense_prediction_cell_hparams():
           to 8, we need to double the convolution rates correspondingly.
   """
   return {
-      'reduction_size': 256,
-      'dropout_on_concat_features': True,
-      'dropout_on_projection_features': False,
-      'dropout_keep_prob': 0.9,
-      'concat_channels': 256,
-      'conv_rate_multiplier': 1,
+    'reduction_size': 256,
+    'dropout_on_concat_features': True,
+    'dropout_on_projection_features': False,
+    'dropout_keep_prob': 0.9,
+    'concat_channels': 256,
+    'conv_rate_multiplier': 1,
   }
 
 
@@ -129,7 +127,7 @@ class DensePredictionCell(object):
     return ([resize_height, resize_width], [pooled_height, pooled_width])
 
   def _parse_operation(self, config, crop_size, output_stride,
-                       image_pooling_crop_size=None):
+      image_pooling_crop_size=None):
     """Parses one operation.
 
     When 'operation' is 'pyramid_pooling', we compute the required
@@ -152,23 +150,23 @@ class DensePredictionCell(object):
     if config[_OP] == _PYRAMID_POOLING:
       (config[_TARGET_SIZE],
        config[_KERNEL]) = self._get_pyramid_pooling_arguments(
-           crop_size=crop_size,
-           output_stride=output_stride,
-           image_grid=config[_GRID_SIZE],
-           image_pooling_crop_size=image_pooling_crop_size)
+          crop_size=crop_size,
+          output_stride=output_stride,
+          image_grid=config[_GRID_SIZE],
+          image_pooling_crop_size=image_pooling_crop_size)
 
     return config
 
   def build_cell(self,
-                 features,
-                 output_stride=16,
-                 crop_size=None,
-                 image_pooling_crop_size=None,
-                 weight_decay=0.00004,
-                 reuse=None,
-                 is_training=False,
-                 fine_tune_batch_norm=False,
-                 scope=None):
+      features,
+      output_stride=16,
+      crop_size=None,
+      image_pooling_crop_size=None,
+      weight_decay=0.00004,
+      reuse=None,
+      is_training=False,
+      fine_tune_batch_norm=False,
+      scope=None):
     """Builds the dense prediction cell based on the config.
 
     Args:
@@ -196,10 +194,10 @@ class DensePredictionCell(object):
         the operation is not recognized.
     """
     batch_norm_params = {
-        'is_training': is_training and fine_tune_batch_norm,
-        'decay': 0.9997,
-        'epsilon': 1e-5,
-        'scale': True,
+      'is_training': is_training and fine_tune_batch_norm,
+      'decay': 0.9997,
+      'epsilon': 1e-5,
+      'scale': True,
     }
     hparams = self.hparams
     with slim.arg_scope(
@@ -228,7 +226,7 @@ class DensePredictionCell(object):
               operation_input = branch_logits[current_config[_INPUT]]
             if current_config[_OP] == _CONV:
               if current_config[_KERNEL] == [1, 1] or current_config[
-                  _KERNEL] == 1:
+                _KERNEL] == 1:
                 branch_logits.append(
                     slim.conv2d(operation_input, depth, 1, scope=scope))
               else:

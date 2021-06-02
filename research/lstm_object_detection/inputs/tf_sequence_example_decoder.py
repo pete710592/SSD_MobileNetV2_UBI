@@ -17,13 +17,14 @@
 
 A decoder to decode string tensors containing serialized
 tensorflow.SequenceExample protos.
+TODO(yinxiao): When TensorFlow object detection API officially supports
+tensorflow.SequenceExample, merge this decoder.
 """
-import tensorflow.compat.v1 as tf
-import tf_slim as slim
+import tensorflow as tf
 from object_detection.core import data_decoder
 from object_detection.core import standard_fields as fields
 
-tfexample_decoder = slim.tfexample_decoder
+tfexample_decoder = tf.contrib.slim.tfexample_decoder
 
 
 class BoundingBoxSequence(tfexample_decoder.ItemHandler):
