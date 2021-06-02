@@ -6,12 +6,10 @@ Tensorflow implementation of object detections using lightweight models.
  - [Part 4: Export frozen inference graph for TensorFlow Lite](https://github.com/pete710592/SSD_MobileNetV2_UBI#part-4-export-frozen-inference-graph-for-tensorflow-lite)  
 
 ## Part 1: Environment setup  
-This code was tested with Tensorflow 1.15.0, CUDA 10.0 and Ubuntu 16.04.  
-### 1-1. Install necessary packages by issuing the following commands:  
+This code was tested with Tensorflow 1.13.1, CUDA 10.0 and Ubuntu 16.04.  
+### 1-1. Install tensorflow:  
 ```shell
-pip install tensorflow-object-detection-api
-pip install tf-slim==1.0
-pip install tensorflow-gpu==1.15
+pip install tensorflow-gpu==1.13.1
 ```  
 
 ### 1-2. Download this repository from GitHub  
@@ -20,7 +18,21 @@ cd
 git clone https://github.com/pete710592/SSD_MobileNetV2_UBI.git
 ```  
 
-### 1-3. Run setup  
+### 1-3. Protobuf Installation/Compilation  
+The Tensorflow Object Detection API uses Protobufs to configure model and training parameters.  
+Before the framework can be used, the Protobuf libraries must be downloaded and compiled.  
+```shell
+cd ~/SSD_MobileNetV2_UBI/research
+protoc object_detection/protos/*.proto --python_out=.
+```  
+
+### 1-4. Run setup  
+Adding necessary Environment Variables.  
+```shell
+cd ~/SSD_MobileNetV2_UBI/research
+python setup.py install
+```  
+Setup ```tf.slim```.  
 ```shell
 cd ~/SSD_MobileNetV2_UBI/research/slim
 python setup.py build
@@ -55,7 +67,7 @@ item {
  - Line 156. Change fine_tune_checkpoint to: ```/root/notebooks/SSD_MobileNetV2_UBI/research/object_detection/pretrained_model/ssd_mobilenet_v2_quantized_300x300_coco_2019_01_03/model.ckpt```  
  - Line 175. Change input_path to: ```/root/notebooks/SSD_MobileNetV2_UBI/research/object_detection/training/train.record```  
  - Line 177. Change label_map_path to: ```/root/notebooks/SSD_MobileNetV2_UBI/research/object_detection/training/labelmap.pbtxt```  
- - Line 181. Change num_examples to the number of images you have in the images/test directory. Ex: ```num_examples: 9951```  
+ - Line 181. Change num_examples to the number of images you have in the images/test directory. Ex: ```num_examples: 10067```  
  - Line 189. Change input_path to: ```/root/notebooks/SSD_MobileNetV2_UBI/research/object_detection/training/test.record```  
  - Line 191. Change label_map_path to: ```/root/notebooks/SSD_MobileNetV2_UBI/research/object_detection/training/labelmap.pbtxt```  
 
@@ -132,5 +144,6 @@ tflite_convert \
 ## Reference  
 1. https://github.com/EdjeElectronics/TensorFlow-Object-Detection-API-Tutorial-Train-Multiple-Objects-Windows-10  
 2. https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi  
+3. https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/tensorflow-1.14/install.html  
 
 ###### tags: `UBI`
