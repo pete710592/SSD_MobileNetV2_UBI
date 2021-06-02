@@ -14,8 +14,7 @@ pip install tensorflow-gpu==1.13.1
 
 ### 1-2. Download this repository from GitHub  
 ```shell
-cd
-git clone https://github.com/pete710592/SSD_MobileNetV2_UBI.git
+cd && git clone https://github.com/pete710592/SSD_MobileNetV2_UBI.git
 ```  
 
 ### 1-3. Protobuf Installation/Compilation  
@@ -42,7 +41,7 @@ python setup.py install
 ## Part 2: Data preprocessing  
 ### 2-1. Download dataset  
 Download vehicle-dataset at ```images```.  
-```
+```shell
 cd ~/SSD_MobileNetV2_UBI/research/object_detection
 git clone https://github.com/pete710592/UBI_Dataset.git images
 ```  
@@ -103,7 +102,7 @@ python generate_tfrecord.py \
 
 ### 3-5. Start training  
 ```shell
-python train.py \
+CUDA_VISIBLE_DEVICES=0 python train.py \
     --logtostderr \
     --train_dir=training \
     --pipeline_config_path=training/ssd_mobilenet_v2_quantized_300x300_coco.config
